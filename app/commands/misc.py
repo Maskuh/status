@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import datetime
 import psutil
+import aiohttp
 
 # local imports
 
@@ -81,8 +82,8 @@ class misc(commands.Cog):
         if service != None:
             async with aiohttp.ClientSession() as session:
                 try:
-                    r= seassion.get(url=service)
-                    await interaction.response.send_message(f"Service {service} responded with status code {r.status}")
+                    async with session.get(url=service) as r:
+                        await interaction.response.send_message(f"Service {service} responded with status code {r.status}")
                 except Exception as e:
                     await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
         if bt != None:

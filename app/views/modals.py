@@ -60,7 +60,7 @@ class Setup(ui.Modal,title="Setup"):
         
 
         async def on_submit(self, interaction: discord.Interaction):
-            valid = await is_valid(interaction,self.NotificationType.value, self.NotificationTarget.value, interaction.client)
+            valid = await is_valid(interaction,self.NotificationType.value, self.NotificationTarget.value, self.NotificationPaylod.value, interaction.client)
             if valid != True:
                 await interaction.response.send_message(valid, ephemeral=True)
                 return

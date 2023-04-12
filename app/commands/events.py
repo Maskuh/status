@@ -9,8 +9,7 @@ class events(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        async def Help():
-            self.help = await helper.Helper()
+        self.help = helper.Helper()
 
     @commands.Cog.listener()
     async def on_presence_update(self, before, after):

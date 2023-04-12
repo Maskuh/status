@@ -72,20 +72,7 @@ class DatabaseV2():
         del old_json[key]
         return old_json
 
-    def __nuke(self):
-        """
-        Nukes the database, let's hope you know what you're doing.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        self.applications.delete(where="id != 69420123") #bodge
-        self.users.delete(where="id != 'admin'")
+    
 
     def get_all_applications(self):
         """

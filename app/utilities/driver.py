@@ -45,11 +45,9 @@ class Driver():
         columns : str
             The columns to be created in the table
         """
-        async def cog_load(self,table_name,columns=""):
-            print("loaded")
-            self.conn = await aiosqlite.connect("database.db")
-            
 
+            
+        async def cog_load(self):
             self.create_table(f"{table_name}",f"{columns}")
     
     async def create_table(self,table_name,columns):

@@ -69,7 +69,7 @@ async def on_ready():
             print(f"Failed to load cog {cog}: {e}")
             traceback.print_exc()
 
-    log_channel = bot.get_channel(949388038260273193)
+    log_channel = bot.get_channel(int(os.getenv("Channel")))
     embed = discord.Embed(
         title="Bot Started",
         description=
@@ -85,8 +85,8 @@ async def on_ready():
 
     # sync the commands
 
-    bot.tree.copy_global_to(guild=discord.Object(939479619587952640))
-    await bot.tree.sync(guild=discord.Object(939479619587952640))
+    bot.tree.copy_global_to(guild=discord.Object(int(os.getenv("Guild"))))
+    await bot.tree.sync(guild=discord.Object(int(os.getenv("Guild"))))
 
     print(
         f"Sucesfully logged in as {bot.user.name}#{bot.user.discriminator} with loaded cogs {cogs}"
@@ -115,7 +115,7 @@ async def on_command_error(ctx, error):
         await ctx.send("I don't have the permissions to do that!")
         return
 
-    log_channel = bot.get_channel(949388038260273193)
+    log_channel = bot.get_channel(int(os.getenv("Channel")))
     embed = discord.Embed(
         title="Error",
         description=

@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import datetime
-import requests
 import psutil
 
 # local imports
@@ -80,11 +79,12 @@ class misc(commands.Cog):
             await interaction.response.send_message("You can only check the status of a bot or a service, not both.")
             return
         if service != None:
-            try:
-                r = requests.get(service)
-                await interaction.response.send_message(f"Service {service} responded with status code {r.status_code}")
-            except Exception as e:
-                await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
+            async with aiohttp.ClientSession() as session:
+                try:
+                    r= seassion.get(url=service)
+                    await interaction.response.send_message(f"Service {service} responded with status code {r.status}")
+                except Exception as e:
+                    await interaction.response.send_message(f"Unable to get service {service}, are you sure it is a valid URL? \n \n Error: || {e} || ")
         if bt != None:
             if bt.bot == False:
                 await interaction.response.send_message("For privacy reasons, you can only check the status of bots.")

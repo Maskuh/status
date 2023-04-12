@@ -6,3 +6,4 @@ quart
 mcstatus
 quart_discord
 psutil
+aiohttp

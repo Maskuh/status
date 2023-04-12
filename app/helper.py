@@ -8,6 +8,7 @@ import json
 import discord
 from discord import ui
 import mcstatus
+import aiohttp
 
 # local imports
 from utilities.data import Application, User, notificationType
@@ -203,24 +204,28 @@ class Helper():
         Void
         """
 
-        for app in self.Database.get_all_applications():
+
+        for app in await self.Database.get_all_applications():
             # web apps
             if app.type["name"] == "web":
-                try:
-                    r = requests.get(app.url)
-                    if r.status_code != 200:
+                async with aiohttp.ClientSession() as session:
+                    try:
+                        r = session.get(app.url)
+                        if r.status in range(100, 500):
+                            pass
+                        else:
+                            await self.send_notification(app.notifications, bot)
+                            pass
+                    except:
                         await self.send_notification(app.notifications, bot)
                         pass
-                except:
-                    await self.send_notification(app.notifications, bot)
-                    pass
 
             # minecraft servers
 
             if app.type["name"] == "mc":
                 try:
-                    mc = mcstatus.JavaServer.lookup(app.url)
-                    status = mc.ping()
+                    mc = await mcstatus.JavaServer.async_lookup(app.url)
+                    status = await mc.async_ping()
                 except:
                     await self.send_notification(app.notifications, bot)
                     pass

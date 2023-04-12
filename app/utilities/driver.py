@@ -1,4 +1,4 @@
-import sqlite3
+import aiosqlite
 
 class Driver():
     """
@@ -34,6 +34,7 @@ class Driver():
         The driver object
     """
     def __init__(self,table_name,columns=""):
+        self.table_name = table_name
         """
         Generates a database object
 
@@ -44,12 +45,14 @@ class Driver():
         columns : str
             The columns to be created in the table
         """
-        self.conn = sqlite3.connect("database.db")
-        self.table_name = table_name
+        async def cog_load(self,table_name,columns=""):
+            print("loaded")
+            self.conn = await aiosqlite.connect("database.db")
+            
 
-        self.create_table(f"{table_name}",f"{columns}")
+            self.create_table(f"{table_name}",f"{columns}")
     
-    def create_table(self,table_name,columns):
+    async def create_table(self,table_name,columns):
         """
         Creates a table in the database
 
@@ -61,10 +64,12 @@ class Driver():
             The columns to be created in the table
         """
 
-        self.conn.execute(f"CREATE TABLE IF NOT EXISTS {table_name}({columns})")
-        self.conn.commit()
+ 
+        async with aiosqlite.connect('database.db') as db:
+            await db.execute(f'CREATE TABLE IF NOT EXISTS {table_name}({columns})')
+            await db.commit()
 
-    def insert(self,columns,values):
+    async def insert(self,columns,values):
         """
         Inserts a row into the table
 
@@ -75,10 +80,11 @@ class Driver():
         values : str
             The values to be inserted into the columns
         """
-        self.conn.execute(f"INSERT INTO {self.table_name}({columns}) VALUES({values})")
-        self.conn.commit()
+        async with aiosqlite.connect('database.db') as db:
+            await db.execute(f"INSERT INTO {self.table_name}({columns}) VALUES({values})")
+            await db.commit()
 
-    def select(self,columns,where=None):
+    async def select(self,columns,where=None):
         """
         Selects a row from the table
 
@@ -90,11 +96,19 @@ class Driver():
             The where statement to be used, defualts to None
         """
         if where:
-            return self.conn.execute(f"SELECT {columns} FROM {self.table_name} WHERE {where}").fetchall()
-        else:
-            return self.conn.execute(f"SELECT {columns} FROM {self.table_name}").fetchall()
+             async with aiosqlite.connect('database.db') as db:
+                async with db.execute(f'SELECT {columns} FROM {self.table_name}  WHERE {where}') as cursor:
+                    rows = await cursor.fetchall()
+                    return rows
 
-    def update(self,where,columns=[],values=[]):
+        else:
+            async with aiosqlite.connect('database.db') as db:
+                async with db.execute(f'SELECT {columns} FROM {self.table_name}') as cursor:
+                    rows = await cursor.fetchall()
+                    return rows
+
+
+    async def update(self,where,columns=[],values=[]):
         """
         Updates a row in the table
 
@@ -116,10 +130,11 @@ class Driver():
                 if columns.index(c) != len(columns) - 1:
                     statement = statement + ", "
             print(f"UPDATE {self.table_name} SET {statement} WHERE {where}")
-        self.conn.execute(f"UPDATE {self.table_name} SET {statement} WHERE {where}")
-        self.conn.commit()
+        async with aiosqlite.connect('database.db') as db:
+            await db.execute(f"UPDATE {self.table_name} SET {statement} WHERE {where}")
+            await db.commit()
     
-    def delete(self,where):
+    async def delete(self,where):
         """
         Deletes a row from the table
 
@@ -128,15 +143,7 @@ class Driver():
         where : str
             The where statement to be used
         """
-        self.conn.execute(f"DELETE FROM {self.table_name} WHERE {where}")
-        self.conn.commit()
+        async with aiosqlite.connect('database.db') as db:
+            await db.execute(f"DELETE FROM {self.table_name} WHERE {where}")
+            await db.commit()
     
-    def close(self):
-        """ 
-        Closes the connection to the database
-
-        Returns
-        -------
-        Void
-        """
-        self.conn.close()

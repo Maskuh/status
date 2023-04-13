@@ -3,9 +3,12 @@ from discord import app_commands
 from discord.ext import commands
 
 
+
+
 # local imports
 import views.modals as modals
 import views.dropdowns as dropdowns
+import utilities.database as db
 
 class configuration(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -21,6 +24,7 @@ class configuration(commands.Cog):
     
     @app_commands.command(name="config", description="View your configuration")
     async def config(self, interaction : discord.Interaction):
+        await dropdowns.config.get_data()
         await interaction.response.send_message("Please select a service to view the configuration of.", view=dropdowns.configView())
 
 async def setup(bot: commands.Bot) -> None:

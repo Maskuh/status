@@ -48,10 +48,10 @@ class unSubscribeView(discord.ui.View):
 # config view
 
 class config(discord.ui.Select):
-    def __init__(self):
+    def __init__(self,subs):
         database = db.Database()
 
-        subs = database.get_user_subscriptions()
+        
 
         options = [
 
@@ -62,7 +62,10 @@ class config(discord.ui.Select):
         options.append(discord.SelectOption(label="Cancel",description="Cancel the operation",emoji="❌"))
 
         super().__init__(placeholder='Select a service', min_values=1, max_values=1, options=options)
-
+    @classmethod
+    async def get_data(cls):
+        subs = await db.get_user_subscriptions()
+        return cls(subs)        
     async def callback(self, interaction: discord.Interaction):
         if self.values[0] == "Cancel":
             await interaction.response.edit_message(content = f"Cancelled operation.",view=None)

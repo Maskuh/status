@@ -1,6 +1,0 @@
-discord.py
-asyncio
-python_dotenv
-pymongo
-mcstatus
-aiohttp[speedups]
